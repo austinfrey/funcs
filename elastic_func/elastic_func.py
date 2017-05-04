@@ -3,8 +3,7 @@ from elasticsearch import Elasticsearch
 
 es = Elasticsearch(
   [
-      os.getenv("ELASTIC_URL")
-      #"http://elastic:changeme@pwd10_0_35_3-9200.host1.labs.play-with-docker.com/"
+      "http://elastic:changeme@pwd10_0_35_3-9200.host1.labs.play-with-docker.com/"
   ],
   verify_certs = False
 )
