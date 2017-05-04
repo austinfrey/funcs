@@ -1,0 +1,76 @@
+version: "3"
+
+services:
+    gateway:
+        image: functions/gateway:0.5.3
+        volumes:
+            -"/var/run/docker.sock:/var/run/docker.sock"
+        ports:
+            - 8080:8080
+        networks:
+            - functions
+        environment:
+            dnsrr: "true"
+        deploy:
+            placement:
+                constraints: [node.role == manager]
+
+    prometheus:
+        image: functions/prometheus:1.5.2
+        volumes:
+            - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+            - ./prometheus/alert.rules:/etc/prometheus/alert.rules
+        command: "-config.file=/etc/prometheus/prometheus.yml -storage.local.path=/prometheus -storage.local.memory-chunks=10000 --alertmanager.url=http://alertmanager:9093"
+        ports:
+            - 9090:9090
+        depends_on:
+            - gateway
+            - alertmanager
+        environment:
+            no_proxy:
+                - gateway
+        networks:
+            - functions
+        deploy:
+            placement:
+                constraints: [node.role == manager]
+    alertmanager:
+        image: quay.io/prometheus/alertmanager
+        environment:
+            no_proxy: "gateway"
+        volumes:
+            - ./prometheus/alertmanager.yml:/alertmanager.yml
+        command:
+            - '-config.file=/alertmanager.yml'
+        networks:
+            - functions
+        ports:
+            - 9093:9093
+        deploy:
+            placement:
+                constraints: [node.role == manager]
+
+    # Functions
+    sent_analysis:
+        image: aafrey/sent_analysis
+        labels:
+            function: "true"
+        networks:
+            - functions
+        depends_on:
+            - gateway
+        environment:
+            no_proxy: "gateway"
+            https_proxy: $https_proxy
+
+    elastic:
+        image: aafrey/elastic_func
+        labels:
+            function: "true"
+        networks:
+            - functions
+        depends_on:
+            - gateway
+        environment:
+            no_proxy: "gateway"
+            https_proxy: $https_proxy

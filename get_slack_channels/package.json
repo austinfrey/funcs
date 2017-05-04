@@ -1,0 +1,16 @@
+{
+  "name": "get_slack_channels",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@slack/client": "^3.9.0",
+    "coffeescript": "^1.12.5",
+    "get-stdin": "^5.0.1"
+  }
+}
