@@ -70,7 +70,7 @@ services:
 
     # ELK Stack
     elk:
-        image: sepb/elk
+        image: sebp/elk
         ports:
             - "9200:9200"
             - "5601:5601"
