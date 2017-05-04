@@ -1,6 +1,7 @@
 version: "3"
 
 services:
+    # FaaS management
     gateway:
         image: functions/gateway:0.5.3
         volumes:
@@ -55,7 +56,7 @@ services:
             no_proxy: "gateway"
             https_proxy: $https_proxy
 
-    elastic:
+    elastic_twitter:
         image: aafrey/elastic_func
         labels:
             function: "true"
@@ -66,3 +67,18 @@ services:
         environment:
             no_proxy: "gateway"
             https_proxy: $https_proxy
+
+    # ELK Stack
+    elk:
+        image: sepb/elk
+        ports:
+            - "9200:9200"
+            - "5601:5601"
+            - "5044:5044"
+        volumes:
+            - /dev/shm:/dev/shm
+        environment:
+            - es.bootstrap.seccomp=false
+            - bootstrap.ignore_system_bootstrap_checks=true
+        security_opt:
+            - seccomp:undefined
